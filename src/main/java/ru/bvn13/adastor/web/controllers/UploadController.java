@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import ru.bvn13.adastor.entities.Stortion;
+import ru.bvn13.adastor.entities.dtos.StortionDto;
 import ru.bvn13.adastor.web.services.StortionService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +24,8 @@ public class UploadController {
     }
 
     @PostMapping(value="/a", produces = {"application/json"})
-    public @ResponseBody Stortion uploadData(HttpServletRequest request) throws IOException {
+    public @ResponseBody
+    StortionDto uploadData(HttpServletRequest request) throws IOException {
         return stortionService.createStortion(request.getInputStream());
     }
 

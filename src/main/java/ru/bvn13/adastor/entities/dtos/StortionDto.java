@@ -1,38 +1,31 @@
-package ru.bvn13.adastor.entities;
+package ru.bvn13.adastor.entities.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
-import ru.bvn13.adastor.config.Config;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Transient;
 import java.time.LocalDateTime;
 
 /**
- * @author boykovn at 11.03.2019
+ * @author boykovn at 12.03.2019
  */
-@Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Stortion {
+public class StortionDto {
 
-    @Id
     private String uuid;
 
-    @Column
     private LocalDateTime storeDate;
 
-    @Column
     private long size;
 
-    @Column
     private String path;
+
+    @Transient
+    private long retention;
 
 }
