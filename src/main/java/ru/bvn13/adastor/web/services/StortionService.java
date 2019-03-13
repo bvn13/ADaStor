@@ -1,5 +1,6 @@
 package ru.bvn13.adastor.web.services;
 
+import org.apache.commons.codec.binary.Hex;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,9 +19,7 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.Formatter;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -78,17 +77,35 @@ public class StortionService {
         String path = String.format("/%s", uuid);
         String fullPath = String.format("%s/%s", config.getStoragePath(), uuid);
 
-        long bytesCount;
-        String hash;
-        try(DigestInputStream dis = new DigestInputStream(new BufferedInputStream(is), MessageDigest.getInstance("SHA-1")); FileOutputStream fos = new FileOutputStream(fullPath)) {
-            bytesCount = is.transferTo(fos);
-            hash = formatMessageDigestToHex(dis);
+        long bytesCount = 0;
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("SHA-1");
         } catch (NoSuchAlgorithmException e) {
             throw new InternalServerError("SHA-1 not found, Sorry.", e);
         }
+        try(
+                DigestInputStream dis = new DigestInputStream(new BufferedInputStream(is), md);
+                FileOutputStream fos = new FileOutputStream(fullPath)
+        ) {
+            byte[] buffer = new byte[128];
+            int length = 0;
+            while ((length = dis.read(buffer)) > 0) {
+                fos.write(buffer, 0, length);
+                bytesCount += length;
+            }
+        }
+
+        if (dataLength != bytesCount) {
+            throw new InternalServerError("Something went wrong. Sorry.");
+        }
+
+        char[] hex = Hex.encodeHex(md.digest());
+        String hash = new String(hex);
 
         Optional<StortionDto> similarByHash = findAnyByHash(hash);
         if (similarByHash.isPresent()) {
+            (new File(fullPath)).delete();
             throw new StortionExistByHash(similarByHash.get());
         }
 
@@ -97,25 +114,10 @@ public class StortionService {
         stortion.setStoreDate(LocalDateTime.now());
         stortion.setPath(path);
         stortion.setSize(bytesCount);
+        stortion.setHash(hash);
 
         stortionRepository.save(stortion);
         return convertToDto(stortion);
-    }
-
-    private String formatMessageDigestToHex(DigestInputStream dis) {
-        final MessageDigest md = dis.getMessageDigest();
-        final byte[] digest = md.digest();
-
-        // Format as HEX
-        try (Formatter formatter = new Formatter()) {
-            for (final byte b : digest) {
-                formatter.format("%02x", b);
-            }
-
-            final String sha1 = formatter.toString();
-            return sha1;
-        }
-
     }
 
     private StortionDto convertToDto(Stortion stortion) {
@@ -125,8 +127,8 @@ public class StortionService {
     }
 
     public Stream<StortionDto> findAllSortedByRetention() {
-        Stream<Stortion> stortions = stortionRepository.findAllSortedByRetention();
-        return stortions.map(this::convertToDto);
+        Collection<Stortion> stortions = stortionRepository.findAllSortedByRetention();
+        return stortions.stream().map(this::convertToDto);
     }
 
     /**
@@ -141,10 +143,6 @@ public class StortionService {
 
     public void removeStortionByUUID(String uuid) {
         stortionRepository.deleteById(uuid);
-    }
-
-    private Iterable<Stortion> findAllByHash(String hash) {
-        return stortionRepository.findAllByHash(hash);
     }
 
     private Optional<StortionDto> findAnyByHash(String hash) {

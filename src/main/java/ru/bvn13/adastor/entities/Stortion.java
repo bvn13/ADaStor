@@ -5,14 +5,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
  * @author boykovn at 11.03.2019
  */
+@Table(
+        indexes = @Index(columnList = "hash")
+)
 @Entity
 @Getter
 @Setter

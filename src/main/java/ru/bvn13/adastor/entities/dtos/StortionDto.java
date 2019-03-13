@@ -28,4 +28,6 @@ public class StortionDto {
     @Transient
     private long retention;
 
+    private String hash;
+
 }

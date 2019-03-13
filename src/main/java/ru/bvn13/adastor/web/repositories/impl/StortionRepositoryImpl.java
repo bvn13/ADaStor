@@ -9,6 +9,7 @@ import ru.bvn13.adastor.web.repositories.CustomStortionRepository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.util.Collection;
 import java.util.stream.Stream;
 
 /**
@@ -39,7 +40,7 @@ public class StortionRepositoryImpl implements CustomStortionRepository {
      * @return queried collection
      */
     @Override
-    public Stream<Stortion> findAllSortedByRetention() {
+    public Collection<Stortion> findAllSortedByRetention() {
 
         long min_age = config.getMinDaysStoring();
         long max_age = config.getMaxDaysStoring();
@@ -51,7 +52,7 @@ public class StortionRepositoryImpl implements CustomStortionRepository {
         query.setParameter("max_age", (double)max_age);
         query.setParameter("max_size", max_size);
 
-        return (Stream<Stortion>) query.getResultStream();
+        return query.getResultList();
 
     }
 }

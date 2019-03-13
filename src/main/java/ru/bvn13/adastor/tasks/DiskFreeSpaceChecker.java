@@ -40,7 +40,7 @@ public class DiskFreeSpaceChecker {
 
     private double getSpaceLeft() {
         File path = new File(config.getStoragePath());
-        double space = (double) path.getFreeSpace() / 1024 / 1024;
+        double space = (double) path.getFreeSpace();// / 1024 / 1024;
         return space;
     }
 
@@ -51,8 +51,8 @@ public class DiskFreeSpaceChecker {
         final ExecutorService es = Executors.newFixedThreadPool(10);
 
         stortionService.findAllSortedByRetention().forEach(stortionDto -> {
-            double space = spaceLeft.accumulateAndGet((double) stortionDto.getSize(), (a, b) -> a + b);
-            if (space >= mustFreeSpace) {
+            double virtualSpace = spaceLeft.accumulateAndGet((double) stortionDto.getSize(), (a, b) -> a + b);
+            if (virtualSpace <= mustFreeSpace) {
                 es.submit(() -> {
                     File file = new File(String.format("%s%s", config.getStoragePath(), stortionDto.getPath()));
                     if (file.exists()) {
