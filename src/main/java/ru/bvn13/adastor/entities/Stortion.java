@@ -4,13 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
-import ru.bvn13.adastor.config.Config;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Transient;
 import java.time.LocalDateTime;
 
 /**
@@ -21,6 +18,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+// Stored portion of data :)
 public class Stortion {
 
     @Id
@@ -34,5 +32,8 @@ public class Stortion {
 
     @Column
     private String path;
+
+    @Column
+    private String hash;
 
 }

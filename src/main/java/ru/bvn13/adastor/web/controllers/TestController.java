@@ -4,9 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import ru.bvn13.adastor.entities.Stortion;
 import ru.bvn13.adastor.entities.dtos.StortionDto;
-import ru.bvn13.adastor.web.repositories.StortionRepository;
 import ru.bvn13.adastor.web.services.StortionService;
 
 import java.util.stream.Stream;

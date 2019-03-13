@@ -17,9 +17,12 @@ public class Config {
     private String storagePath;
 
     @Getter
-    // #{new Integer.parseInt('${api.orders.pingFrequency}')}
     @Value("${adastor.storage.space.free}")
     private Long freeSpace;
+
+    @Getter
+    @Value("${adastor.storage.space.critical}")
+    private Long criticalSpace;
 
     @Getter
     @Value("${adastor.max-size}")
@@ -46,6 +49,12 @@ public class Config {
         }
         if (maxDaysStoring == null || maxDaysStoring.equals(0L)) {
             throw new IllegalArgumentException("Max days storing is not specified!");
+        }
+        if (criticalSpace == null) {
+            throw new IllegalArgumentException("Critical space is not specified!");
+        }
+        if (criticalSpace.compareTo(freeSpace) > 0) {
+            throw new IllegalArgumentException("Critical space must be less than free space!");
         }
     }
 
