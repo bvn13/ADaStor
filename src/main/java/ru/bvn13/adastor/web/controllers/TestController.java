@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 /**
  * @author boykovn at 12.03.2019
  */
-@Controller
+//@Controller
 public class TestController {
 
     private StortionService stortionService;
