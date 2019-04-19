@@ -53,16 +53,16 @@ public class StortionService {
         this.diskFreeSpaceChecker = diskFreeSpaceChecker;
     }
 
-    public Optional<Stortion> findStortion(String uuid) {
-        return stortionRepository.findById(uuid);
+    public Optional<StortionDto> findStortion(String uuid) {
+        return stortionRepository.findById(uuid).map(this::convertToDto);
     }
 
-    public String getPath(Stortion stortion) {
+    public String getPath(StortionDto stortion) {
         String storagePath = config.getStoragePath();
         return storagePath + stortion.getPath();
     }
 
-    public InputStream getInputStream(Stortion stortion) throws FileNotFoundException {
+    public InputStream getInputStream(StortionDto stortion) throws FileNotFoundException {
         String path = getPath(stortion);
         InputStream targetStream = new DataInputStream(new FileInputStream(path));
         return targetStream;

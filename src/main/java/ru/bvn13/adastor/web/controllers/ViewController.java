@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import ru.bvn13.adastor.entities.Stortion;
+import ru.bvn13.adastor.entities.dtos.StortionDto;
 import ru.bvn13.adastor.web.services.StortionService;
 
 import javax.servlet.http.HttpServletResponse;
@@ -29,13 +29,13 @@ public class ViewController {
 
     @GetMapping("/v/{uuid}")
     public void getStortion(@PathVariable("uuid") String uuid, HttpServletResponse response) throws IOException {
-        Optional<Stortion> stortion = stortionService.findStortion(uuid);
+        Optional<StortionDto> stortion = stortionService.findStortion(uuid);
         if (stortion.isPresent()) {
             try(BufferedOutputStream bos = new BufferedOutputStream(response.getOutputStream())) {
                 InputStream is = stortionService.getInputStream(stortion.get());
                 is.transferTo(bos);
             } catch (FileNotFoundException e) {
-                response.sendError(403, "not found");
+                response.sendError(404, "not found");
             }
         } else {
             response.sendRedirect("/notfound");
